@@ -62,7 +62,7 @@ class TestAnnouncementPublished(TestCase):
             2. Verify that the response is correct.
         """
         self.logger.info(
-            "STEP: Query 'data.activityOutcome' from AnnouncementPublished in Graphql."
+            "STEP: Query 'data.outcome' from AnnouncementPublished in Graphql."
         )
         self.logger.debug(DATA_ONLY)
         response = self.query_handler.execute(DATA_ONLY)

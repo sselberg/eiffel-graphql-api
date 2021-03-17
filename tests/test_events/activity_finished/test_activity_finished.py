@@ -59,12 +59,10 @@ class TestActivityFinished(TestCase):
                    "description": "This activity finished successfully."}
 
         Test steps:
-            1. Query 'data.activityOutcome' from ActivityFinished in Graphql.
+            1. Query 'data.outcome' from ActivityFinished in Graphql.
             2. Verify that the response is correct.
         """
-        self.logger.info(
-            "STEP: Query 'data.activityOutcome' from ActivityFinished in Graphql."
-        )
+        self.logger.info("STEP: Query 'data.outcome' from ActivityFinished in Graphql.")
         self.logger.debug(DATA_ONLY)
         response = self.query_handler.execute(DATA_ONLY)
         self.logger.debug(pretty(response))
@@ -73,7 +71,7 @@ class TestActivityFinished(TestCase):
         self.assertIsInstance(data, dict)
         self.assertGreater(len(data), 0)
         self.assertDictEqual(
-            data.get("activityOutcome"),
+            data.get("outcome"),
             {
                 "conclusion": "SUCCESSFUL",
                 "description": "This activity finished successfully.",
@@ -90,11 +88,11 @@ class TestActivityFinished(TestCase):
                     { "uri": "http://log2.se", "name": "log2"} ]
 
         Test steps:
-            1. Query 'data.activityPersistentLogs' from ActivityFinished in Graphql.
+            1. Query 'data.persistentLogs' from ActivityFinished in Graphql.
             2. Verify that the response is correct.
         """
         self.logger.info(
-            "STEP: Query 'data.activityPersistentLogs' from ActivityFinished in Graphql."
+            "STEP: Query 'data.persistentLogs' from ActivityFinished in Graphql."
         )
         self.logger.debug(DATA_ONLY)
         response = self.query_handler.execute(DATA_ONLY)
@@ -103,16 +101,16 @@ class TestActivityFinished(TestCase):
         data = self.query_handler.get_node(response, "data")
         self.assertIsInstance(data, dict)
         self.assertGreater(len(data), 0)
-        self.assertEqual(len(data.get("activityPersistentLogs", [])), 2)
+        self.assertEqual(len(data.get("persistentLogs", [])), 2)
         for name, uri in (("log", "http://log.se"), ("log2", "http://log2.se")):
-            for log in data.get("activityPersistentLogs"):
+            for log in data.get("persistentLogs"):
                 if log.get("name") == name:
                     self.assertEqual(log.get("uri"), uri)
                     break
             else:
                 raise AssertionError(
                     "{{'name': {}, 'uri': {}}} not in liveLogs: {}".format(
-                        name, uri, data.get("activityPersistentLogs")
+                        name, uri, data.get("persistentLogs")
                     )
                 )
 

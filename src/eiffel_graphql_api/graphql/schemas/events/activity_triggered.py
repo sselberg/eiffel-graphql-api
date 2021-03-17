@@ -28,7 +28,6 @@ class ActivityTriggered(EiffelObjectType):
     data = json_schema_to_graphql(
         "ActivityTriggeredData",
         load("EiffelActivityTriggeredEvent.json").get("data").get("properties"),
-        override_name={"triggers": "activityTriggers"},
     )
     mongo = None
 

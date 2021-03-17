@@ -28,10 +28,6 @@ class TestSuiteFinished(EiffelObjectType):
     data = json_schema_to_graphql(
         "TestSuiteFinishedData",
         load("EiffelTestSuiteFinishedEvent.json").get("data").get("properties"),
-        override_name={
-            "persistentLogs": "testSuitePersistentLogs",
-            "outcome": "testSuiteOutcome",
-        },
     )
     mongo = None
 

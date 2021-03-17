@@ -76,7 +76,7 @@ class TestArtifactCreated(TestCase):
             {
                 "identity": "pkg:artifact/created/test@1.0.0",
                 "fileInformation": [
-                    {"name": "a_file.txt", "artifactTags": [{"type": "EPIC_TEST_FILE"}]}
+                    {"name": "a_file.txt", "tags": [{"type": "EPIC_TEST_FILE"}]}
                 ],
                 "buildCommand": "pytest",
                 "requiresImplementation": "ANY",

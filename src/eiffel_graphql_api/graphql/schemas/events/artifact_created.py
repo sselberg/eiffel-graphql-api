@@ -28,7 +28,6 @@ class ArtifactCreated(EiffelObjectType):
     data = json_schema_to_graphql(
         "ArtifactCreatedData",
         load("EiffelArtifactCreatedEvent.json").get("data").get("properties"),
-        override_name={"tags": "artifactTags"},
     )
     mongo = None
 

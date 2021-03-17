@@ -112,7 +112,7 @@
     "data": {
       "type": "object",
       "properties": {
-        "outcome": {
+        "testSuiteOutcome": {
           "type": "object",
           "properties": {
             "verdict": {

@@ -73,7 +73,7 @@ class TestActivityTriggered(TestCase):
             - Data returned shall be correct:
                 - name             : "Activity triggered"
                 - categories       : [{"type": "Testing EiffelDB"}]
-                - activityTriggers : [{"type": "MANUAL",
+                - triggers : [{"type": "MANUAL",
                                        "description": "Eiffel Graphql API test trigger"}]
                 - executionType    : "MANUAL"
 
@@ -94,9 +94,9 @@ class TestActivityTriggered(TestCase):
 
         self.logger.info("STEP: Verify that data returned correctly.")
         self.assertEqual(data.get("categories"), [{"type": "Testing EiffelDB"}])
-        self.assertEqual(len(data.get("activityTriggers", [])), 1)
+        self.assertEqual(len(data.get("triggers", [])), 1)
         self.assertDictEqual(
-            data.get("activityTriggers")[0],
+            data.get("triggers")[0],
             {"type": "MANUAL", "description": "Eiffel Graphql API test trigger"},
         )
         self.assertEqual(data.get("executionType"), "MANUAL")

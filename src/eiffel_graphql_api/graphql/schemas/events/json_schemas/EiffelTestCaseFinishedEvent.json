@@ -112,7 +112,7 @@
     "data": {
       "type": "object",
       "properties": {
-        "outcome": {
+        "testCaseOutcome": {
           "type": "object",
           "properties": {
             "verdict": {
@@ -200,7 +200,7 @@
         }
       },
       "required": [
-        "outcome"
+        "testCaseOutcome"
       ],
       "additionalProperties": false
     },

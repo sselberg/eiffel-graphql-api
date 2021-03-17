@@ -20,11 +20,11 @@ DATA_ONLY = """{
     edges {
       node {
         data {
-          activityOutcome {
+          outcome {
             conclusion
             description
           }
-          activityPersistentLogs {
+          persistentLogs {
             name
             uri
           }

@@ -28,7 +28,6 @@ class TestCaseTriggered(EiffelObjectType):
     data = json_schema_to_graphql(
         "TestCaseTriggeredData",
         load("EiffelTestCaseTriggeredEvent.json").get("data").get("properties"),
-        override_name={"triggers": "testCaseTriggers"},
     )
     mongo = None
 

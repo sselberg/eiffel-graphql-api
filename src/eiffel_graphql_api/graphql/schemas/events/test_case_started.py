@@ -28,7 +28,6 @@ class TestCaseStarted(EiffelObjectType):
     data = json_schema_to_graphql(
         "TestCaseStartedData",
         load("EiffelTestCaseStartedEvent.json").get("data").get("properties"),
-        override_name={"liveLogs": "testCaseLiveLogs"},
     )
     mongo = None
 

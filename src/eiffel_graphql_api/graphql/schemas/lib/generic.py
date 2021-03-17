@@ -29,6 +29,8 @@ BASE_JSON = os.path.join(
 FIRST_CAPITAL_RE = re.compile("(.)([A-Z][a-z]+)")
 ALL_CAPITAL_RE = re.compile("([a-z0-9])([A-Z])")
 
+OBJECT_TYPES = {}
+
 
 def convert(name):
     """Convert a javaCamelCase string to snake_case string.
@@ -175,41 +177,34 @@ def create_object_type(name, dictionary, key=None):
     :rtype: obj
     """
     if key == "customData":
-        obj = CustomData
-    else:
+        return CustomData
+    if name not in OBJECT_TYPES:
         obj = type(name, (graphene.ObjectType,), dictionary)
-    return obj
+        OBJECT_TYPES[name] = obj
+    return OBJECT_TYPES[name]
 
 
-def key_names(key, override_name):
-    """Generate the different key names based on overrides and different naming schemes.
+def key_names(key):
+    """Generate the different key names based on different naming schemes.
 
     :param key: Key to rename.
     :type key: str
-    :param override_name: Overrides for key names.
-                          Some eiffel keys have the same name and since graphene
-                          cannot handle the same names of objects, we need to add
-                          overrides for these.
-    :type override_name: dict
     :return: Tuple of four different names:
-             - Key name - with override if applicable (jsonCamelCase)
-             - Data key - If key name is overriden, this will be the original (jsonCamelCase)
+             - Key name - The original key (jsonCamelCase)
              - Cls name - Name of the class that should be generated (CamelCase)
              - attribute name - Name of the attribute (snake_case)
     :rtype: tuple
     """
-    data_key = key
-    key = override_name.get(key, key)
     # Capitalize removes the capital on the string. We only want the first letter
     # to change. By capitalizing just the first index and then attaching the rest
     # we achieve that.
     # Converts 'dataKey' to 'DataKey'.
     cls_name = "{}{}".format(key[0].capitalize(), key[1:])
     attribute_name = convert(key)
-    return key, data_key, cls_name, attribute_name
+    return key, cls_name, attribute_name
 
 
-def generate_array(key, value, override_name, data_dict):
+def generate_array(key, value, data_dict):
     """Generate a graphene List for a json schema 'array'.
 
     Note that this function will also call the parent 'json_schema_to_graphql' which
@@ -221,25 +216,19 @@ def generate_array(key, value, override_name, data_dict):
     :type key: str
     :param value: Value to attach to the generated object.
     :type value: any
-    :param override_name: Overrides for key names.
-                          Some eiffel keys have the same name and since graphene
-                          cannot handle the same names of objects, we need to add
-                          overrides for these.
-    :type override_name: dict
     :param data_dict: Dictionary to populate with the resolver as well as the generated object.
     :type data_dict: dict
     """
-    key, data_key, cls_name, attribute_name = key_names(key, override_name)
-
+    key, cls_name, attribute_name = key_names(key)
     dictionary = {"__init__": default_init}
     value = array_value(value)
-    json_schema_to_graphql(cls_name, value, dictionary, override_name)
+    json_schema_to_graphql(cls_name, value, dictionary)
     obj = create_object_type(cls_name, dictionary, key)
     data_dict[attribute_name] = graphene.List(obj)
-    data_dict["resolve_{}".format(attribute_name)] = resolvers(graphene.List, data_key)
+    data_dict["resolve_{}".format(attribute_name)] = resolvers(graphene.List, key)
 
 
-def generate_object(key, value, override_name, data_dict):
+def generate_object(key, value, data_dict):
     """Generate a graphene Field for a json schema 'object'.
 
     Note that this function will also call the parent 'json_schema_to_graphql' which
@@ -251,24 +240,19 @@ def generate_object(key, value, override_name, data_dict):
     :type key: str
     :param value: Value to attach to the generated object.
     :type value: any
-    :param override_name: Overrides for key names.
-                          Some eiffel keys have the same name and since graphene
-                          cannot handle the same names of objects, we need to add
-                          overrides for these.
-    :type override_name: dict
     :param data_dict: Dictionary to populate with the resolver as well as the generated object.
     :type data_dict: dict
     """
-    key, data_key, cls_name, attribute_name = key_names(key, override_name)
+    key, cls_name, attribute_name = key_names(key)
 
     dictionary = {"__init__": default_init}
-    json_schema_to_graphql(cls_name, value.get("properties"), dictionary, override_name)
+    json_schema_to_graphql(cls_name, value.get("properties"), dictionary)
     obj = create_object_type(cls_name, dictionary)
     data_dict[attribute_name] = graphene.Field(obj)
-    data_dict["resolve_{}".format(attribute_name)] = resolvers(graphene.Field, data_key)
+    data_dict["resolve_{}".format(attribute_name)] = resolvers(graphene.Field, key)
 
 
-def generate_simple(key, graphene_type, override_name, data_dict):
+def generate_simple(key, graphene_type, data_dict):
     """Resolve simple keys.
 
     Will just create a graphene simple type and add a resolver to it.
@@ -277,21 +261,16 @@ def generate_simple(key, graphene_type, override_name, data_dict):
     :type key: str
     :param graphene_type: Graphene type object to use for the generated object.
     :type graphene_type: type
-    :param override_name: Overrides for key names.
-                          Some eiffel keys have the same name and since graphene
-                          cannot handle the same names of objects, we need to add
-                          overrides for these.
-    :type override_name: dict
     :param data_dict: Dictionary to populate with the resolver as well as the generated object.
     :type data_dict: dict
     """
-    key, _, __, attribute_name = key_names(key, override_name)
+    key, __, attribute_name = key_names(key)
     data_dict[attribute_name] = graphene_type()
     data_dict["resolve_{}".format(attribute_name)] = resolvers(graphene_type, key)
 
 
 def json_schema_to_graphql(
-    name, data, data_dict=None, override_name={}
+    name, data, data_dict=None
 ):  # pylint:disable=dangerous-default-value
     """Resolve an Eiffel JSONSchema and generate a GraphQL queryable structure.
 
@@ -305,13 +284,13 @@ def json_schema_to_graphql(
         data_dict = {}
     for key, value in data.items():
         if value.get("type") == "array":
-            generate_array(key, value, override_name, data_dict)
+            generate_array(key, value, data_dict)
         elif value.get("type") == "object":
-            generate_object(key, value, override_name, data_dict)
+            generate_object(key, value, data_dict)
         elif value.get("type") == "string":
-            generate_simple(key, graphene.String, override_name, data_dict)
+            generate_simple(key, graphene.String, data_dict)
         elif value.get("type") == "integer":
-            generate_simple(key, BigInt, override_name, data_dict)
+            generate_simple(key, BigInt, data_dict)
 
     if data_dict:
         cls = type(

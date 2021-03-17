@@ -28,7 +28,6 @@ class ActivityStarted(EiffelObjectType):
     data = json_schema_to_graphql(
         "ActivityStartedData",
         load("EiffelActivityStartedEvent.json").get("data").get("properties"),
-        override_name={"liveLogs": "activityLiveLogs"},
     )
     mongo = None
 

@@ -23,7 +23,7 @@ DATA_ONLY = """{
           identity
           fileInformation {
             name
-            artifactTags {
+            tags {
               type
             }
           }

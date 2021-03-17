@@ -28,13 +28,6 @@ class SourceChangeSubmitted(EiffelObjectType):
     data = json_schema_to_graphql(
         "SourceChangeSubmittedData",
         load("EiffelSourceChangeSubmittedEvent.json").get("data").get("properties"),
-        override_name={
-            "ccCompositeIdentifier": "sourceChangeSubmittedCcCompositeIdentifier",
-            "vobs": "sourceChangeSubmittedVobs",
-            "gitIdentifier": "sourceChangeSubmittedGitIdentifier",
-            "hgIdentifier": "sourceChangeSubmittedHgIdentifier",
-            "svnIdentifier": "sourceChangeSubmittedSvnIdentifier",
-        },
     )
     mongo = None
 

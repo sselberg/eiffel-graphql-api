@@ -28,10 +28,6 @@ class ActivityFinished(EiffelObjectType):
     data = json_schema_to_graphql(
         "ActivityFinishedData",
         load("EiffelActivityFinishedEvent.json").get("data").get("properties"),
-        override_name={
-            "persistentLogs": "activityPersistentLogs",
-            "outcome": "activityOutcome",
-        },
     )
     mongo = None
 

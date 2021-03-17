@@ -30,7 +30,6 @@ class TestExecutionRecipeCollectionCreated(EiffelObjectType):
         load("EiffelTestExecutionRecipeCollectionCreatedEvent.json")
         .get("data")
         .get("properties"),
-        override_name={"testCase": "recipeTestCase"},
     )
     mongo = None
 

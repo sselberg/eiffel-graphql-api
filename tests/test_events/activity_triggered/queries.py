@@ -37,7 +37,7 @@ DATA_ONLY = """{
           categories {
             type
           }
-          activityTriggers {
+          triggers {
             type
             description
           }
